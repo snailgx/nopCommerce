@@ -115,7 +115,7 @@ namespace Nop.Web.Models.Catalog
         public string Result { get; set; }
     }
 
-    public partial class AddProductReviewReviewTypeMappingModel : BaseNopEntityModel
+    public partial class AddProductReviewReviewTypeMappingModel
     {
         public int ProductReviewId { get; set; }
 

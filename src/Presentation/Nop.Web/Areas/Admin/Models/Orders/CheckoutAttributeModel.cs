@@ -109,8 +109,10 @@ namespace Nop.Web.Areas.Admin.Models.Orders
         public IList<AttributeConditionModel> ConditionAttributes { get; set; }
     }
 
-    public partial class AttributeConditionModel : BaseNopEntityModel
+    public partial class AttributeConditionModel
     {
+        public int Id { get; set; }
+
         public string Name { get; set; }
 
         public AttributeControlType AttributeControlType { get; set; }
