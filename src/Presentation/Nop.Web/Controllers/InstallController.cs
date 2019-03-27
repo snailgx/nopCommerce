@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Security.Principal;
 using System.Threading;
@@ -280,13 +281,17 @@ namespace Nop.Web.Controllers
             var dirsToCheck = FilePermissionHelper.GetDirectoriesWrite();
             foreach (var dir in dirsToCheck)
                 if (!FilePermissionHelper.CheckPermissions(dir, false, true, true, false))
-                    ModelState.AddModelError("", string.Format(_locService.GetResource("ConfigureDirectoryPermissions"), WindowsIdentity.GetCurrent().Name, dir));
+                    ModelState.AddModelError("", string.Format(_locService.GetResource("ConfigureDirectoryPermissions"), CurrentOSUser.FullName, dir));
 
             var filesToCheck = FilePermissionHelper.GetFilesWrite();
             foreach (var file in filesToCheck)
-                if (!FilePermissionHelper.CheckPermissions(file, false, true, true, true))
-                    ModelState.AddModelError("", string.Format(_locService.GetResource("ConfigureFilePermissions"), WindowsIdentity.GetCurrent().Name, file));
+            {
+                if (!System.IO.File.Exists(file))
+                    continue;
 
+                if (!FilePermissionHelper.CheckPermissions(file, false, true, true, true))
+                    ModelState.AddModelError("", string.Format(_locService.GetResource("ConfigureFilePermissions"), CurrentOSUser.FullName, file));
+            }
             if (ModelState.IsValid)
             {
                 try
@@ -348,7 +353,10 @@ namespace Nop.Web.Controllers
 
                     //now resolve installation service
                     var installationService = EngineContext.Current.Resolve<IInstallationService>();
-                    installationService.InstallData(model.AdminEmail, model.AdminPassword, model.InstallSampleData);
+                    installationService.InstallRequiredData(model.AdminEmail, model.AdminPassword);
+
+                    if(model.InstallSampleData)
+                        installationService.InstallSampleData(model.AdminEmail);
 
                     //reset cache
                     DataSettingsManager.ResetCache();
