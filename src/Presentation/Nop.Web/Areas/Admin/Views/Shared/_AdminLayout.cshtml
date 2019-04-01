@@ -79,10 +79,6 @@
 
     //sidebar
     const string hideSidebarAttributeName = "HideSidebar";
-    var hideSidebar = genericAttributeService.GetAttribute<bool>(workContext.CurrentCustomer, hideSidebarAttributeName);
-
-    const string isMobileSidebarAttributeName = "IsMobileSidebar";
-    var isMobileSidebar = genericAttributeService.GetAttribute<bool>(workContext.CurrentCustomer, isMobileSidebarAttributeName);
 
     //avatar
     var currentCustomer = workContext.CurrentCustomer;
@@ -109,9 +105,7 @@
         @*Insert favicon and app icons head code*@
         @await Component.InvokeAsync("Favicon")
     </head>
-    <body class="hold-transition skin-blue sidebar-mini
-        @if (!isMobileSidebar && hideSidebar) {<text>sidebar-collapse</text>}
-        @if (isMobileSidebar && hideSidebar) {<text>sidebar-open</text>}">
+    <body class="hold-transition skin-blue sidebar-mini">
         <div class="throbber">
             <div class="curtain">
             </div>
@@ -287,12 +281,25 @@
                 //enable tooltips
                 $('[data-toggle="tooltip"]').tooltip();
 
+                var hideSidebar =  @(genericAttributeService.GetAttribute<bool>(workContext.CurrentCustomer, hideSidebarAttributeName).ToString().ToLower());
+                var isMobile = $(window).width() <= '750';
+
+                if (isMobile && hideSidebar) {
+                    $('body').addClass('sidebar-open');
+                    if ($('body').hasClass('sidebar-collapse')) {
+                        $('body').removeClass('sidebar-collapse');
+                    }
+                }
+                if (!isMobile && hideSidebar) {
+                    $('body').addClass('sidebar-collapse');
+                    if ($('body').hasClass('sidebar-open')) {
+                        $('body').removeClass('sidebar-open');
+                    }
+                }
+
                 //save sidebar preferences
                 $('a.sidebar-toggle').on('click', function () {
-                    var isMobile = $(window).width() <= '750';
-                    saveUserPreferences('@(Url.Action("SavePreference", "Preferences"))', '@isMobileSidebarAttributeName', isMobile);
-
-                    if (isMobile) {
+                    if ($(window).width() <= '750') {
                         var collapsed = !$('body').hasClass('sidebar-open');
                         saveUserPreferences('@(Url.Action("SavePreference", "Preferences"))', '@hideSidebarAttributeName', collapsed);
                     } else {
