@@ -1493,14 +1493,20 @@ namespace Nop.Web.Areas.Admin.Factories
 
             localizedModelConfiguration = (locale, languageId) =>
             {
-                if (attribute.AttributeType == SpecificationAttributeType.CustomHtmlText)
+                switch (attribute.AttributeType)
                 {
-                    locale.ValueRaw = _localizationService.GetLocalized(attribute, entity => entity.CustomValue, languageId, false, false);
-                }
-
-                if (attribute.AttributeType == SpecificationAttributeType.CustomText)
-                {
-                    locale.Value = _localizationService.GetLocalized(attribute, entity => entity.CustomValue, languageId, false, false);
+                    case SpecificationAttributeType.CustomHtmlText:
+                        locale.ValueRaw = _localizationService.GetLocalized(attribute, entity => entity.CustomValue, languageId, false, false);
+                        break;
+                    case SpecificationAttributeType.CustomText:
+                        locale.Value = _localizationService.GetLocalized(attribute, entity => entity.CustomValue, languageId, false, false);
+                        break;
+                    case SpecificationAttributeType.Option:
+                        break;
+                    case SpecificationAttributeType.Hyperlink:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             };
 

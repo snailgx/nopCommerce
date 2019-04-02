@@ -86,7 +86,6 @@
                                     <nop-select asp-for="AttributeTypeId" asp-items="@(((SpecificationAttributeType) Model.AttributeTypeId).ToSelectList())" />
                                 }
                                 <span asp-validation-for="AttributeTypeId"></span>
-
                             </div>
                         </div>
                         <div class="form-group">
@@ -104,6 +103,7 @@
                                 }
                             </div>
                         </div>
+
                         <script>
                             $(document).ready(function() {
                                 var valueContainers = {
@@ -118,10 +118,10 @@
                                         var attrTypeId = $('#@Html.IdFor(model => model.AttributeTypeId)').val();
 
                                         var values = Object.values(valueContainers);
-                                        for (var i = 0; i < values.length; ++i) {
-                                            values[i].hide();
-                                            values[i].find("input").prop("disabled", true);
-                                        }
+                                        values.forEach(function(value) {
+                                            value.hide();
+                                            value.find("input").prop("disabled", true);
+                                        });
                                         valueContainers[attrTypeId].show();
                                         valueContainers[attrTypeId].find("input").prop("disabled", false);
 
@@ -135,10 +135,11 @@
                                             allowFilteringSection.hide();
                                         }
                                     });
-                                $('#@Html.IdFor(model => model.AttributeTypeId)').trigger('change');
 
+                                $('#@Html.IdFor(model => model.AttributeTypeId)').trigger('change');
                             })
                         </script>
+
                         @if (Model.SpecificationId == 0)
                         {
                             <script>
@@ -166,7 +167,6 @@
                                             error: function(xhr, ajaxOptions, thrownError) {
                                                 $("#getOptionsByAttributeIdAlert").click();
                                             }
-
                                         });
                                     });
                                     $("#@Html.IdFor(model => model.AttributeId)").trigger('change');
@@ -247,7 +247,6 @@
                                 <span asp-validation-for="Value"></span>
                             </div>
                         </div>
-
                         <div class="form-group" id="AllowFilteringSection">
                             <div class="col-md-3">
                                 <nop-label asp-for="AllowFiltering" />
